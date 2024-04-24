@@ -1,75 +1,66 @@
-
-const fromMenuButtons = document.querySelectorAll(".converter__from-menu-btn");
-
-fromMenuButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-        button.classList.toggle("converter__to-menu-btn--active");
-    })
-})
+const API_URL = "https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_eI9vCmHvEFCXiVfhcbN24WpaQAAnz6dKouZw4qsE";
+const FROM_CURRENCY_DEFAULT_STATE = "USD";
+const TO_CURRENCY_DEFAULT_STATE = "RUB";
+const FROM_CURRENCY_DEFAULT_VALUE = 1;
+const FLOAT_FIXED_VALUE = 5;
 
 
-/* document.addEventListener("DOMContentLoaded", function () {
-    // Получаем элементы, с которыми будем работать
-    const fromMenuButtons = document.querySelectorAll(".converter__from-menu-btn");
-    const toMenuButtons = document.querySelectorAll(".converter__to-menu-btn");
-    const fromReportValue = document.querySelector(".converter__from-report-value");
-    const toReportValue = document.querySelector(".converter__to-report-value");
+document.addEventListener("DOMContentLoaded", function () {
+    const FROM_CURRENCY_BUTTONS = document.querySelectorAll("[data-from-currency]");
+    const TO_CURRENCY_BUTTONS = document.querySelectorAll("[data-to-currency]");
 
-    // Функция для обновления значений валют
-    function updateCurrencyValues(fromCurrency, toCurrency) {
-        // Формируем URL запроса к API
-        const apiUrl = `https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_eI9vCmHvEFCXiVfhcbN24WpaQAAnz6dKouZw4qsE`;
+    const FROM_REPORT_VALUE = document.querySelector("#from_report_value");
+    const TO_REPORT_VALUE = document.querySelector("#to_report_value");
 
-        // Отправляем GET запрос к API
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                // Получаем значения валют
-                const fromValue = data.data[fromCurrency.toUpperCase()];
-                const toValue = data.data[toCurrency.toUpperCase()];
+    const FROM_REPORT_CURRENT_RATE = document.querySelector("#from_report_current_rate");
+    const TO_REPORT_CURRENT_RATE = document.querySelector("#to_report_current_rate");
 
-                // Обновляем отчеты о значениях валют
-                fromReportValue.textContent = fromValue.toFixed(2);
-                toReportValue.textContent = toValue.toFixed(2);
-            })
-            .catch(error => console.error("Ошибка при получении данных о валютах:", error));
-    }
 
-    // Функция для удаления класса active у всех кнопок меню валют
-    function removeActiveClass(menuButtons) {
-        menuButtons.forEach(button => {
-            button.classList.remove("converter__from-menu-btn--active", "converter__to-menu-btn--active");
-        });
-    }
 
-    // Назначаем обработчики событий на кнопки меню
-    fromMenuButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            // Удаляем класс active у всех кнопок в меню "Откуда"
-            removeActiveClass(fromMenuButtons);
-            // Добавляем класс active к текущей выбранной кнопке
+    FROM_CURRENCY_BUTTONS.forEach((from_button) => {
+        if (from_button.getAttribute("data-from-currency") === FROM_CURRENCY_DEFAULT_STATE.toLowerCase()) {
+            from_button.classList.add("converter__from-menu-btn--active");
+        }
+        from_button.addEventListener("click", function () {
+            FROM_CURRENCY_BUTTONS.forEach((from_btn) => {
+                from_btn.classList.remove("converter__from-menu-btn--active");
+            });
             this.classList.add("converter__from-menu-btn--active");
-
-            const fromCurrency = this.getAttribute("data-from-currency");
-            const toCurrency = document.querySelector(".converter__to-menu-btn.converter__to-menu-btn--active").getAttribute("data-to-currency");
-            updateCurrencyValues(fromCurrency, toCurrency);
         });
     });
 
-    toMenuButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            // Удаляем класс active у всех кнопок в меню "Куда"
-            removeActiveClass(toMenuButtons);
-            // Добавляем класс active к текущей выбранной кнопке
+    TO_CURRENCY_BUTTONS.forEach((to_button) => {
+        if (to_button.getAttribute("data-to-currency").toUpperCase() === TO_CURRENCY_DEFAULT_STATE.toUpperCase()) {
+            to_button.classList.add("converter__to-menu-btn--active");
+        }
+        to_button.addEventListener("click", function () {
+            TO_CURRENCY_BUTTONS.forEach((to_btn) => {
+                to_btn.classList.remove("converter__to-menu-btn--active");
+            });
             this.classList.add("converter__to-menu-btn--active");
-
-            const toCurrency = this.getAttribute("data-to-currency");
-            const fromCurrency = document.querySelector(".converter__from-menu-btn.converter__from-menu-btn--active").getAttribute("data-from-currency");
-            updateCurrencyValues(fromCurrency, toCurrency);
         });
     });
 
-    // При загрузке страницы обновляем значения по умолчанию
-    updateCurrencyValues("RUB", "EUR");
+    async function getCurrencyRate(from_currency = FROM_CURRENCY_DEFAULT_STATE, to_currency = TO_CURRENCY_DEFAULT_STATE) {
+        try {
+            const response = await fetch(`${API_URL}&base_currency=${from_currency.toUpperCase()}&currencies=${to_currency.toUpperCase()}`, {
+                method: "GET",
+                headers: {
+                    "Content-type": "application/json"
+                }
+            });
+            const resp_json = await response.json();
+            return parseFloat(resp_json.data[to_currency.toUpperCase()]).toFixed(FLOAT_FIXED_VALUE);
+        }
+        catch (throwedError) {
+            console.error("Error fetching currency rate:", throwedError);
+            return null;
+        }
+    }
+
+    getCurrencyRate(FROM_CURRENCY_DEFAULT_STATE, TO_CURRENCY_DEFAULT_STATE).then((response) => {
+        TO_REPORT_VALUE.value = response;
+    });
+
+    f
 });
- */
